@@ -1,14 +1,9 @@
-import {
-  CameraControls,
-  ContactShadows,
-  Environment,
-  Text,
-} from "@react-three/drei";
+import { CameraControls, ContactShadows, Environment, Text } from "@react-three/drei";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useChat } from "../hooks/useChat";
 import { Avatar } from "./Avatar";
 
-const Dots = (props) => {
+const LoadingDots = (props) => {
   const { loading } = useChat();
   const [loadingText, setLoadingText] = useState("");
   useEffect(() => {
@@ -37,7 +32,7 @@ const Dots = (props) => {
   );
 };
 
-export const Experience = () => {
+export const Scenario = () => {
   const cameraControls = useRef();
   const { cameraZoomed } = useChat();
 
@@ -57,7 +52,7 @@ export const Experience = () => {
       <CameraControls ref={cameraControls} />
       <Environment preset="sunset" />
       <Suspense>
-        <Dots position-y={1.75} position-x={-0.02} />
+        <LoadingDots position-y={1.75} position-x={-0.02} />
       </Suspense>
       <Avatar />
       <ContactShadows opacity={0.7} />

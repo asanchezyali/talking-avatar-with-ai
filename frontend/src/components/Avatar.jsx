@@ -283,7 +283,7 @@ export function Avatar(props) {
   }, []);
 
   return (
-    <group {...props} dispose={null} ref={group}>
+    <group {...props} dispose={null} ref={group} position={[0, -0.4, 1]}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
         name="EyeLeft"

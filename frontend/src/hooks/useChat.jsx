@@ -21,7 +21,6 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState();
   const [loading, setLoading] = useState(false);
-  const [cameraZoomed, setCameraZoomed] = useState(true);
   const onMessagePlayed = () => {
     setMessages((messages) => messages.slice(1));
   };
@@ -41,8 +40,6 @@ export const ChatProvider = ({ children }) => {
         message,
         onMessagePlayed,
         loading,
-        cameraZoomed,
-        setCameraZoomed,
       }}
     >
       {children}
