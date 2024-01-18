@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "soundFile": "/Users/wawa/Documents/Projects/wawasensei/r3f-virtual-girlfriend-backend/audios/api_0.wav",
+    "duration": 2.69
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.01, "value": "X" },
+    { "start": 0.01, "end": 0.07, "value": "A" },
+    { "start": 0.07, "end": 0.31, "value": "B" },
+    { "start": 0.31, "end": 0.39, "value": "A" },
+    { "start": 0.39, "end": 0.66, "value": "B" },
+    { "start": 0.66, "end": 0.78, "value": "X" },
+    { "start": 0.78, "end": 0.86, "value": "B" },
+    { "start": 0.86, "end": 0.93, "value": "E" },
+    { "start": 0.93, "end": 1.07, "value": "F" },
+    { "start": 1.07, "end": 1.21, "value": "C" },
+    { "start": 1.21, "end": 1.35, "value": "F" },
+    { "start": 1.35, "end": 1.42, "value": "C" },
+    { "start": 1.42, "end": 1.63, "value": "F" },
+    { "start": 1.63, "end": 1.70, "value": "C" },
+    { "start": 1.70, "end": 1.78, "value": "A" },
+    { "start": 1.78, "end": 1.96, "value": "B" },
+    { "start": 1.96, "end": 2.03, "value": "D" },
+    { "start": 2.03, "end": 2.45, "value": "B" },
+    { "start": 2.45, "end": 2.69, "value": "X" }
+  ]
+}

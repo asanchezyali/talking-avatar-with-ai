@@ -8,6 +8,10 @@ import { useChat } from "../hooks/useChat";
 import facialExpressions from "../constants/facialExpressions";
 import visemesMapping from "../constants/visemesMapping";
 
+console.log(facialExpressions);
+console.log(visemesMapping);
+
+
 let setupMode = false;
 
 export function Avatar(props) {
@@ -192,7 +196,7 @@ export function Avatar(props) {
   }, []);
 
   return (
-    <group {...props} dispose={null} ref={group} position={[0, -0.4, 1]}>
+    <group {...props} dispose={null} ref={group} position={[0, -0.65, 0]}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
         name="EyeLeft"

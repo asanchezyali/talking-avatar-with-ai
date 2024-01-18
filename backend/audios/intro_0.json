@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "soundFile": "/Users/wawa/Documents/Projects/wawasensei/r3f-virtual-girlfriend-backend/audios/intro.wav",
+    "duration": 1.90
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.03, "value": "X" },
+    { "start": 0.03, "end": 0.15, "value": "C" },
+    { "start": 0.15, "end": 0.57, "value": "B" },
+    { "start": 0.57, "end": 0.94, "value": "X" },
+    { "start": 0.94, "end": 1.04, "value": "C" },
+    { "start": 1.04, "end": 1.11, "value": "E" },
+    { "start": 1.11, "end": 1.25, "value": "F" },
+    { "start": 1.25, "end": 1.32, "value": "B" },
+    { "start": 1.32, "end": 1.53, "value": "C" },
+    { "start": 1.53, "end": 1.60, "value": "B" },
+    { "start": 1.60, "end": 1.90, "value": "X" }
+  ]
+}
