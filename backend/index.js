@@ -1,20 +1,22 @@
 import { exec } from "child_process";
 import cors from "cors";
 import dotenv from "dotenv";
-import voice from "elevenlabs-node";
+import ElevenLabs from "elevenlabs-node";
 import express from "express";
 import { promises as fs } from "fs";
 import OpenAI from "openai";
+import { chain, parser } from "./modules/openAI.mjs";
 dotenv.config();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPEN_API_KEY || "-", // Your OpenAI API key here, I used "-" to avoid errors when the key is not set but you should not do that
-});
-
-console.log(process.env.OPEN_API_KEY);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "-" });
 
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
-const voiceID = "kgG7dCoKCfLehAPWkJOE";
+const voiceID = "pNInz6obpgDQGcFmaJgB";
+
+const voice = new ElevenLabs({
+  apiKey: elevenLabsApiKey,
+  voiceId: voiceID,
+});
 
 const app = express();
 app.use(express.json());
@@ -97,20 +99,22 @@ app.post("/chat", async (req, res) => {
     });
     return;
   }
+  let messages = await chain.invoke({ question: userMessage, format_instructions: parser.getFormatInstructions() });
+  console.log(messages);
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: process.env.OPENAI_MODEL,
     max_tokens: 1000,
     temperature: 0.6,
     messages: [
       {
         role: "system",
         content: `
-        You are a virtual girlfriend.
-        You will always reply with a JSON array of messages. With a maximum of 3 messages.
-        Each message has a text, facialExpression, and animation property.
-        The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-        The different animations are: Talking-1, Talking-2, Talking-3, Thriller and Rapping. 
+          You are a virtual girlfriend.
+          You will always reply with a JSON array of messages. With a maximum of 3 messages.
+          Each message has a text, facialExpression, and animation property.
+          The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
+          The different animations are: Talking-1, Talking-2, Talking-3, Thriller and Rapping. 
         `,
       },
       {
@@ -119,16 +123,30 @@ app.post("/chat", async (req, res) => {
       },
     ],
   });
+/*   console.log(completion.choices[0].message.content);
   let messages = JSON.parse(completion.choices[0].message.content);
+  */
   if (messages.messages) {
-    messages = messages.messages; // ChatGPT is not 100% reliable, sometimes it directly returns an array and sometimes a JSON object with a messages property
+    messages = messages.messages;
   }
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    // generate audio file
-    const fileName = `audios/message_${i}.mp3`; // The name of your audio file
-    const textInput = message.text; // The text you wish to convert to speech
-    await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput);
+    console.log(message);
+    const fileName = `audios/message_${i}.mp3`;
+    const textInput = message.text;
+    await voice.textToSpeech({
+      // Required Parameters
+      fileName: fileName,
+      textInput: textInput,
+
+      // Optional Parameters
+      voiceId: "21m00Tcm4TlvDq8ikWAM",
+      stability: 0.5,
+      similarityBoost: 0.5,
+      modelId: "eleven_multilingual_v2",
+      style: 1,
+      speakerBoost: true,
+    });
     // generate lipsync
     await lipSyncMessage(i);
     message.audio = await audioFileToBase64(fileName);
