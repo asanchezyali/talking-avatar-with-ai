@@ -10,11 +10,14 @@
   },
   "author": "Wawa SENSEI <contact@wawasensei.dev>",
   "dependencies": {
+    "@langchain/openai": "^0.0.12",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "elevenlabs-node": "^1.2.0",
+    "elevenlabs-node": "^2.0.3",
     "express": "^4.18.2",
-    "openai": "^4.11.1"
+    "langchain": "^0.1.4",
+    "openai": "^4.11.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
