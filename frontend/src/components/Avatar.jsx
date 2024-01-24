@@ -8,10 +8,6 @@ import { useChat } from "../hooks/useChat";
 import facialExpressions from "../constants/facialExpressions";
 import visemesMapping from "../constants/visemesMapping";
 
-console.log(facialExpressions);
-console.log(visemesMapping);
-
-
 let setupMode = false;
 
 export function Avatar(props) {
@@ -22,7 +18,6 @@ export function Avatar(props) {
   const [lipsync, setLipsync] = useState();
 
   useEffect(() => {
-    console.log(message);
     if (!message) {
       setAnimation("Idle");
       return;
