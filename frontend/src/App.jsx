@@ -8,9 +8,9 @@ function App() {
   return (
     <>
       <Loader />
-      <Leva hidden />
+      <Leva collapsed />
       <ChatInterface />
-      <Canvas shadows camera={{ position: [0, 0, 0], fov: 6 }}>
+      <Canvas shadows camera={{ position: [0, 0, 0], fov: 10 }}>
         <Scenario />
       </Canvas>
     </>
