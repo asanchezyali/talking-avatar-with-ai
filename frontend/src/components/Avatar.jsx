@@ -7,15 +7,14 @@ import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
 import facialExpressions from "../constants/facialExpressions";
 import visemesMapping from "../constants/visemesMapping";
-
-let setupMode = false;
+import morphTargets from "../constants/morphTargets";
 
 export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF("/models/avatar.glb");
-
-  const { message, onMessagePlayed, chat } = useChat();
-
+  const { animations } = useGLTF("/models/animations.glb");
+  const { message, onMessagePlayed } = useChat();
   const [lipsync, setLipsync] = useState();
+  const [setupMode, setSetupMode] = useState(false);
 
   useEffect(() => {
     if (!message) {
@@ -31,19 +30,22 @@ export function Avatar(props) {
     audio.onended = onMessagePlayed;
   }, [message]);
 
-  const { animations } = useGLTF("/models/animations.glb");
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
-  const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "Idle") ? "Idle" : animations[0].name // Check if Idle animation exists otherwise use first animation
-  );
+  const [animation, setAnimation] = useState(animations.find((a) => a.name === "Idle") ? "Idle" : animations[0].name);
   useEffect(() => {
-    actions[animation]
-      .reset()
-      .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
-      .play();
-    return () => actions[animation].fadeOut(0.5);
+    if (actions[animation]) {
+      actions[animation]
+        .reset()
+        .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
+        .play();
+      return () => {
+        if (actions[animation]) {
+          actions[animation].fadeOut(0.5);
+        }
+      };
+    }
   }, [animation]);
 
   const lerpMorphTarget = (target, value, speed = 0.1) => {
@@ -54,27 +56,17 @@ export function Avatar(props) {
           return;
         }
         child.morphTargetInfluences[index] = THREE.MathUtils.lerp(child.morphTargetInfluences[index], value, speed);
-
-        if (!setupMode) {
-          try {
-            set({
-              [target]: value,
-            });
-          } catch (e) {}
-        }
       }
     });
   };
 
   const [blink, setBlink] = useState(false);
-  const [winkLeft, setWinkLeft] = useState(false);
-  const [winkRight, setWinkRight] = useState(false);
   const [facialExpression, setFacialExpression] = useState("");
   const [audio, setAudio] = useState();
 
   useFrame(() => {
     !setupMode &&
-      Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
+      morphTargets.forEach((key) => {
         const mapping = facialExpressions[facialExpression];
         if (key === "eyeBlinkLeft" || key === "eyeBlinkRight") {
           return; // eyes wink/blink are handled separately
@@ -86,8 +78,8 @@ export function Avatar(props) {
         }
       });
 
-    lerpMorphTarget("eyeBlinkLeft", blink || winkLeft ? 1 : 0, 0.5);
-    lerpMorphTarget("eyeBlinkRight", blink || winkRight ? 1 : 0, 0.5);
+    lerpMorphTarget("eyeBlinkLeft", blink ? 1 : 0, 0.5);
+    lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
 
     if (setupMode) {
       return;
@@ -115,15 +107,6 @@ export function Avatar(props) {
   });
 
   useControls("FacialExpressions", {
-    chat: button(() => chat()),
-    winkLeft: button(() => {
-      setWinkLeft(true);
-      setTimeout(() => setWinkLeft(false), 300);
-    }),
-    winkRight: button(() => {
-      setWinkRight(true);
-      setTimeout(() => setWinkRight(false), 300);
-    }),
     animation: {
       value: animation,
       options: animations.map((a) => a.name),
@@ -133,41 +116,40 @@ export function Avatar(props) {
       options: Object.keys(facialExpressions),
       onChange: (value) => setFacialExpression(value),
     },
-    enableSetupMode: button(() => {
-      setupMode = true;
-    }),
-    disableSetupMode: button(() => {
-      setupMode = false;
+    setupMode: button(() => {
+      setSetupMode(!setupMode);
     }),
     logMorphTargetValues: button(() => {
       const emotionValues = {};
-      Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
-        if (key === "eyeBlinkLeft" || key === "eyeBlinkRight") {
-          return; // eyes wink/blink are handled separately
-        }
-        const value = nodes.EyeLeft.morphTargetInfluences[nodes.EyeLeft.morphTargetDictionary[key]];
-        if (value > 0.01) {
-          emotionValues[key] = value;
+      Object.values(nodes).forEach((node) => {
+        if (node.morphTargetInfluences && node.morphTargetDictionary) {
+          morphTargets.forEach((key) => {
+            if (key === "eyeBlinkLeft" || key === "eyeBlinkRight") {
+              return;
+            }
+            const value = node.morphTargetInfluences[node.morphTargetDictionary[key]];
+            if (value > 0.01) {
+              emotionValues[key] = value;
+            }
+          });
         }
       });
       console.log(JSON.stringify(emotionValues, null, 2));
     }),
   });
 
-  const [, set] = useControls("MorphTarget", () =>
+  useControls("MorphTarget", () =>
     Object.assign(
       {},
-      ...Object.keys(nodes.EyeLeft.morphTargetDictionary).map((key) => {
+      ...morphTargets.map((key) => {
         return {
           [key]: {
             label: key,
             value: 0,
-            min: nodes.EyeLeft.morphTargetInfluences[nodes.EyeLeft.morphTargetDictionary[key]],
+            min: 0,
             max: 1,
             onChange: (val) => {
-              if (setupMode) {
-                lerpMorphTarget(key, val, 1);
-              }
+              lerpMorphTarget(key, val, 0.1);
             },
           },
         };
@@ -191,7 +173,7 @@ export function Avatar(props) {
   }, []);
 
   return (
-    <group {...props} dispose={null} ref={group} position={[0, -0.65, 0]}>
+    <group {...props} dispose={null} ref={group} position={[0, -0.5, 0]}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
         name="EyeLeft"
