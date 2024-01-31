@@ -4,7 +4,7 @@ import { button, useControls } from "leva";
 import React, { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
-import { useChat } from "../hooks/useChat";
+import { useSpeech } from "../hooks/useSpeech";
 import facialExpressions from "../constants/facialExpressions";
 import visemesMapping from "../constants/visemesMapping";
 import morphTargets from "../constants/morphTargets";
@@ -12,7 +12,7 @@ import morphTargets from "../constants/morphTargets";
 export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF("/models/avatar.glb");
   const { animations } = useGLTF("/models/animations.glb");
-  const { message, onMessagePlayed } = useChat();
+  const { message, onMessagePlayed } = useSpeech();
   const [lipsync, setLipsync] = useState();
   const [setupMode, setSetupMode] = useState(false);
 
