@@ -24,4 +24,4 @@ async function convertTextToSpeech({ text, fileName }) {
   });
 }
 
-export { convertTextToSpeech };
+export { convertTextToSpeech, voice };

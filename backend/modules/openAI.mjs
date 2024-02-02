@@ -13,7 +13,7 @@ const template = `
   Each message has properties for text, facialExpression, and animation.
   The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
   The different animations are: Idle, TalkingOne, TalkingThree, SadIdle, Defeated, Angry, 
-  Surprised, DismissingGesture, Thinking, and ThoughtfulHeadShake.
+  Surprised, DismissingGesture and ThoughtfulHeadShake.
 `;
 
 const prompt = ChatPromptTemplate.fromMessages([
@@ -41,7 +41,7 @@ const parser = StructuredOutputParser.fromZodSchema(
           .string()
           .describe(
             `Animation to be used by the AI. Select from: Idle, TalkingOne, TalkingThree, SadIdle, 
-            Defeated, Angry, Surprised, DismissingGesture, Thinking, and ThoughtfulHeadShake.`
+            Defeated, Angry, Surprised, DismissingGesture, and ThoughtfulHeadShake.`
           ),
       })
     ),
