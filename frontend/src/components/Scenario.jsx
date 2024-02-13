@@ -1,4 +1,4 @@
-import { CameraControls, ContactShadows, Environment, Text } from "@react-three/drei";
+import { CameraControls, Environment } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import { Avatar } from "./Avatar";
 
@@ -12,7 +12,6 @@ export const Scenario = () => {
       <CameraControls ref={cameraControls} />
       <Environment preset="sunset" />
       <Avatar />
-      <ContactShadows opacity={0.7} />
     </>
   );
 };
