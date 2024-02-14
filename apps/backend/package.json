@@ -1,12 +1,11 @@
 {
-  "name": "talking-avatar-ai-backend",
+  "name": "digital-human-backend",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js --ext js"
+    "start": "node server.js",
+    "dev": "nodemon server.js --ext js"
   },
   "dependencies": {
     "@langchain/openai": "^0.0.12",
