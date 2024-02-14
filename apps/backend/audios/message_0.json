@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "soundFile": "/Users/nemesis/Documents/Monadical/talking-avatar-with-ai/apps/backend/audios/message_0.wav",
+    "duration": 3.16
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.05, "value": "X" },
+    { "start": 0.05, "end": 0.11, "value": "B" },
+    { "start": 0.11, "end": 0.17, "value": "C" },
+    { "start": 0.17, "end": 0.38, "value": "E" },
+    { "start": 0.38, "end": 0.45, "value": "F" },
+    { "start": 0.45, "end": 0.52, "value": "B" },
+    { "start": 0.52, "end": 1.47, "value": "X" },
+    { "start": 1.47, "end": 1.52, "value": "B" },
+    { "start": 1.52, "end": 1.57, "value": "C" },
+    { "start": 1.57, "end": 1.71, "value": "B" },
+    { "start": 1.71, "end": 1.92, "value": "C" },
+    { "start": 1.92, "end": 2.13, "value": "B" },
+    { "start": 2.13, "end": 2.21, "value": "A" },
+    { "start": 2.21, "end": 2.38, "value": "F" },
+    { "start": 2.38, "end": 2.45, "value": "B" },
+    { "start": 2.45, "end": 2.73, "value": "C" },
+    { "start": 2.73, "end": 2.87, "value": "B" },
+    { "start": 2.87, "end": 3.16, "value": "X" }
+  ]
+}

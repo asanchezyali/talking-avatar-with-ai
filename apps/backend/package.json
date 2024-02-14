@@ -1,14 +1,13 @@
 {
   "name": "talking-avatar-ai-backend",
   "version": "1.0.0",
-  "description": "Backend for the virtual girlfriend app",
   "main": "index.js",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js --ext js"
   },
-  "author": "Wawa SENSEI <contact@wawasensei.dev>",
   "dependencies": {
     "@langchain/openai": "^0.0.12",
     "cors": "^2.8.5",
