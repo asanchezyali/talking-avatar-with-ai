@@ -1,3 +1,5 @@
+https://github.com/asanchezyali/talking-avatar-with-ai/assets/29262782/da316db9-6dd1-4475-9fe5-39dafbeb3cc4
+
 ## Digital Human
 
 This project is a digital human that can talk and listen to you. It uses OpenAI's GPT-3 to generate responses, OpenAI's
