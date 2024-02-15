@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "client": "yarn --cwd apps/frontend dev",
-    "server": "nodemon --exec 'yarn --cwd apps/backend dev'",
+    "server": "yarn --cwd apps/backend dev",
     "dev": "npm-run-all --parallel client server"
   },
   "devDependencies": {
