@@ -27,16 +27,21 @@ export const SpeechProvider = ({ children }) => {
     reader.onloadend = async function () {
       const base64Audio = reader.result.split(",")[1];
       setLoading(true);
-      const data = await fetch(`${backendUrl}/sts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ audio: base64Audio }),
-      });
-      const response = (await data.json()).messages;
-      setMessages((messages) => [...messages, ...response]);
-      setLoading(false);
+      try {
+        const data = await fetch(`${backendUrl}/sts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ audio: base64Audio }),
+        });
+        const response = (await data.json()).messages;
+        setMessages((messages) => [...messages, ...response]);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     };
   };
 
@@ -77,19 +82,23 @@ export const SpeechProvider = ({ children }) => {
     }
   };
 
-  // TTS logic
   const tts = async (message) => {
     setLoading(true);
-    const data = await fetch(`${backendUrl}/tts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message }),
-    });
-    const response = (await data.json()).messages;
-    setMessages((messages) => [...messages, ...response]);
-    setLoading(false);
+    try {
+      const data = await fetch(`${backendUrl}/tts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+      const response = (await data.json()).messages;
+      setMessages((messages) => [...messages, ...response]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onMessagePlayed = () => {
