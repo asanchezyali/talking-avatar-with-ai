@@ -132,9 +132,14 @@ The system operates through two primary workflows, depending on whether the user
 Before using this system, ensure you have the following prerequisites:
 
 1. **OpenAI Subscription:** You must have an active subscription with OpenAI. If you don't have one, you can create it [here](https://openai.com/product).
-2. **Eleven Labs Subscription:** You need to have a subscription with Eleven Labs. If you don't have one yet, you can sign up [here](https://elevenlabs.io/).
-3. **Rhubarb Lip-Sync:** Download the latest version of Rhubarb Lip-Sync compatible with your operating system from the official [Rhubarb Lip-Sync repository](https://github.com/DanielSWolf/rhubarb-lip-sync/releases). Once downloaded, create a `/bin` directory in the backend and move all the contents of the unzipped `rhubarb-lip-sync.zip` into it.
-
+2. **Eleven Labs Subscription:** You need to have a subscription with Eleven Labs. If you don't have one yet, you can
+   sign up [here](https://elevenlabs.io/). 
+It's recommended to have the paid version. With the free version, the avatar doesn't work well due to an error caused by too many requests.
+3. **Rhubarb Lip-Sync:** Download the latest version of Rhubarb Lip-Sync compatible with your operating system from the
+   official [Rhubarb Lip-Sync repository](https://github.com/DanielSWolf/rhubarb-lip-sync/releases). Once downloaded,
+   create a `/bin` directory in the backend and move all the contents of the unzipped `rhubarb-lip-sync.zip` into it.
+   Sometimes, the operating system requests permissions, so you need to enable them.
+4. Install `ffmpeg` for  [Mac OS](https://formulae.brew.sh/formula/ffmpeg), [Linux](https://ffmpeg.org/download.html) or [Windows](https://ffmpeg.org/download.html).
 
 ### Installation
 
