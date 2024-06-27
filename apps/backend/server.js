@@ -3,7 +3,10 @@ import dotenv from "dotenv";
 import express from "express";
 import { openAIChain, parser } from "./modules/openAI.mjs";
 import { lipSync } from "./modules/lip-sync.mjs";
-import { sendDefaultMessages, defaultResponse } from "./modules/defaultMessages.mjs";
+import {
+  sendDefaultMessages,
+  defaultResponse,
+} from "./modules/defaultMessages.mjs";
 import { convertAudioToText } from "./modules/whisper.mjs";
 
 dotenv.config();

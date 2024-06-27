@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <Loader />
-      <Leva collapsed hidden/>
+      <Leva collapsed hidden />
       <ChatInterface />
       <Canvas shadows camera={{ position: [0, 0, 0], fov: 10 }}>
         <Scenario />
