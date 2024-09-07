@@ -149,7 +149,7 @@ It's recommended to have the paid version. With the free version, the avatar doe
 1. Clone this repository:
   
 ```bash
-git clone git@github.com:Monadical-SAS/digital-human.git
+git@github.com:asanchezyali/talking-avatar-with-ai.git
 ```
 
 2. Navigate to the project directory:
