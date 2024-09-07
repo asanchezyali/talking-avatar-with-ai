@@ -6,7 +6,7 @@ This project is a digital human that can talk and listen to you. It uses OpenAI'
 Whisper to transcript the audio, Eleven Labs to generate voice and Rhubarb Lip Sync to generate the lip sync. The tutorial
 to understand all the details of the repository can be found at [Monadical](https://monadical.com/posts/build-a-digital-human-with-large-language-models.html).
 
-I have made this Discord channel available: [Math & Code](https://discord.com/channels/938819411303874631/1268765916179730523) to resolve doubts about the configurations of this project in development.
+I have made this Discord channel available: [Math & Code](https://discord.gg/gJ3vCgSWeh) to resolve doubts about the configurations of this project in development.
 
 The brain of this project is based on Open AI, where the avatar characteristics and the shape of the response are
 defined in the following code fragment:
