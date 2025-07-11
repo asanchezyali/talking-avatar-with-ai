@@ -33,7 +33,7 @@ app.post("/tts", async (req, res) => {
       format_instructions: parser.getFormatInstructions(),
     });
   } catch (error) {
-    openAImessages = defaultResponse;
+    openAImessages = { messages: defaultResponse };
   }
   openAImessages = await lipSync({ messages: openAImessages.messages });
   res.send({ messages: openAImessages });
@@ -50,7 +50,7 @@ app.post("/sts", async (req, res) => {
       format_instructions: parser.getFormatInstructions(),
     });
   } catch (error) {
-    openAImessages = defaultResponse;
+    openAImessages = { messages: defaultResponse };
   }
   openAImessages = await lipSync({ messages: openAImessages.messages });
   res.send({ messages: openAImessages });
