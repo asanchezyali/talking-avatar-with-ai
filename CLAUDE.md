@@ -3,6 +3,10 @@
 ## Project Overview
 This is a **Digital Human / Talking Avatar** monorepo that creates AI-powered avatars capable of realistic conversations with lip-sync, facial expressions, and animations.
 
+## Requirements
+- **Node.js**: >= 24.0.0 (LTS Krypton) - use `nvm use` to switch
+- **Yarn**: Package manager
+
 ## Architecture
 - **Monorepo**: Yarn workspaces with apps/frontend and apps/backend
 - **Frontend**: React + Three.js + React Three Fiber for 3D avatar rendering
