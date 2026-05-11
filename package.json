@@ -13,7 +13,9 @@
   "scripts": {
     "client": "yarn --cwd apps/frontend dev",
     "server": "yarn --cwd apps/backend dev",
-    "dev": "npm-run-all --parallel client server"
+    "lip-sync": "cd apps/lip-sync && uv run uvicorn lip_sync.main:app --reload --port 8000",
+    "dev": "npm-run-all --parallel client server lip-sync",
+    "dev:js-only": "npm-run-all --parallel client server"
   },
   "devDependencies": {
     "nodemon": "^3.0.3",

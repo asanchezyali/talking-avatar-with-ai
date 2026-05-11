@@ -1,0 +1,30 @@
+services:
+  frontend:
+    build: ./apps/frontend
+    ports:
+      - "5173:5173"
+
+  backend:
+    build: ./apps/backend
+    ports:
+      - "3000:3000"
+    environment:
+      - LIP_SYNC_SERVICE_URL=http://lip-sync:8000
+    env_file:
+      - ./apps/backend/.env
+    depends_on:
+      lip-sync:
+        condition: service_healthy
+
+  lip-sync:
+    build: ./apps/lip-sync
+    ports:
+      - "8000:8000"
+    environment:
+      - LIP_SYNC_WHISPER_MODEL=base
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
