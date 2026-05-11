@@ -1,9 +1,4 @@
 services:
-  frontend:
-    build: ./apps/frontend
-    ports:
-      - "5173:5173"
-
   backend:
     build: ./apps/backend
     ports:
@@ -23,7 +18,7 @@ services:
     environment:
       - LIP_SYNC_WHISPER_MODEL=base
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 10s
       timeout: 5s
       retries: 5

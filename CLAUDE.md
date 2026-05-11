@@ -6,7 +6,7 @@ This is a **Digital Human / Talking Avatar** monorepo that creates AI-powered av
 ## Requirements
 - **Node.js**: >= 24.0.0 (LTS Krypton) - use `nvm use` to switch
 - **Yarn**: Package manager (Node.js apps)
-- **Python**: >= 3.11 (lip-sync service)
+- **Python**: >= 3.13 (lip-sync service)
 - **uv**: Python package manager - `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - **ffmpeg**: Required by Whisper and pydub - `brew install ffmpeg`
 
