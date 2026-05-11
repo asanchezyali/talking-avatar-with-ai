@@ -1,207 +1,194 @@
+# Talking Avatar with AI
+
+![Python](https://img.shields.io/badge/Python-3.13+-3776AB?logo=python&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24+-339933?logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![Three.js](https://img.shields.io/badge/Three.js-0.160-000000?logo=three.js&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-Whisper%20%7C%20GPT-412991?logo=openai&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
 https://github.com/asanchezyali/talking-avatar-with-ai/assets/29262782/da316db9-6dd1-4475-9fe5-39dafbeb3cc4
 
-## Digital Human
+## Overview
 
-This project is a digital human that can talk and listen to you. It uses OpenAI's GPT-3 to generate responses, OpenAI's
-Whisper to transcript the audio, Eleven Labs to generate voice and Rhubarb Lip Sync to generate the lip sync. The tutorial
-to understand all the details of the repository can be found at [Monadical](https://monadical.com/posts/build-a-digital-human-with-large-language-models.html).
+A digital human that can talk and listen to you. It uses OpenAI GPT for conversation, Whisper for speech recognition, Eleven Labs for voice synthesis, and a custom Python lip-sync service powered by Whisper for audio-accurate mouth animations — all rendered as a 3D avatar with Three.js.
 
-I have made this Discord channel available: [Math & Code](https://discord.gg/gJ3vCgSWeh) to resolve doubts about the configurations of this project in development.
-
-The brain of this project is based on Open AI, where the avatar characteristics and the shape of the response are
-defined in the following code fragment:
-
-```js
-import { ChatOpenAI } from "@langchain/openai";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { StructuredOutputParser } from "langchain/output_parsers";
-import { z } from "zod";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const template = `
-  You are Jack, a world traveler.
-  You will always respond with a JSON array of messages, with a maximum of 3 messages:
-  \n{format_instructions}.
-  Each message has properties for text, facialExpression, and animation.
-  The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-  The different animations are: Idle, TalkingOne, TalkingThree, SadIdle, Defeated, Angry, 
-  Surprised, DismissingGesture and ThoughtfulHeadShake.
-`;
-
-const prompt = ChatPromptTemplate.fromMessages([
-  ["ai", template],
-  ["human", "{question}"],
-]);
-
-const model = new ChatOpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY || "-",
-  modelName: process.env.OPENAI_MODEL || "davinci",
-  temperature: 0.2,
-});
-
-const parser = StructuredOutputParser.fromZodSchema(
-  z.object({
-    messages: z.array(
-      z.object({
-        text: z.string().describe("Text to be spoken by the AI"),
-        facialExpression: z
-          .string()
-          .describe(
-            "Facial expression to be used by the AI. Select from: smile, sad, angry, surprised, funnyFace, and default"
-          ),
-        animation: z
-          .string()
-          .describe(
-            `Animation to be used by the AI. Select from: Idle, TalkingOne, TalkingThree, SadIdle, 
-            Defeated, Angry, Surprised, DismissingGesture, and ThoughtfulHeadShake.`
-          ),
-      })
-    ),
-  })
-);
-
-const openAIChain = prompt.pipe(model).pipe(parser);
-
-export { openAIChain, parser };
+## Architecture
 
 ```
+┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Frontend   │────▶│     Backend      │────▶│   Lip-Sync      │
+│  React/Three │◀────│  Node.js/Express │◀────│  Python/FastAPI  │
+│  Port: 5173  │     │   Port: 3000     │     │   Port: 8000    │
+└─────────────┘     └──────────────────┘     └─────────────────┘
+                           │                        │
+                     ┌─────┴─────┐            ┌─────┴─────┐
+                     │ OpenAI GPT│            │  Whisper   │
+                     │Eleven Labs│            │  g2p-en    │
+                     └───────────┘            └───────────┘
+```
 
-The code performs four main tasks:
+| Service | Stack | Port | Description |
+|---------|-------|------|-------------|
+| **Frontend** | React + Three.js + React Three Fiber | `5173` | 3D avatar rendering, lip-sync playback, chat UI |
+| **Backend** | Node.js + Express + LangChain | `3000` | LLM orchestration, TTS, request routing |
+| **Lip-Sync** | Python + FastAPI + Whisper + g2p-en | `8000` | Audio-based phoneme detection and viseme mapping |
 
-* It sets up the environment using the dotenv library to establish the necessary environment variables for interacting with the OpenAI API.
+### How It Works
 
-* It defines a "prompt" template using the ChatPromptTemplate class from @langchain/core/prompts. This template guides the conversation as a predefined script for the chat.
+**Text input flow:**
+1. User enters text → Backend sends to OpenAI GPT (structured response with text, expression, animation)
+2. GPT response → Eleven Labs TTS → MP3 audio
+3. Audio + text → Python Lip-Sync service → Whisper extracts word timestamps → g2p-en maps to phonemes → viseme cues
+4. Frontend plays audio + syncs avatar mouth/expression/animation in real-time
 
-* It configures the chat model using the ChatOpenAI class, which relies on OpenAI's "davinci" model if the environment variables have not been configured previously.
+**Audio input flow:**
+1. User records audio → OpenAI Whisper transcribes to text
+2. Same flow as text input from step 1
 
-* It parses the output, designing the response generated by the AI in a specific format that includes details about the facial expression and animation to use, which is crucial for a realistic interaction with Jack.
-  
-* This service integrates with Eleven Labs and Rhubarb Lip-Sync to generate the following client integration interface, where the exchanged data looks something like this:
-```js
-[
-  {
-    text: "I've been to so many places around the world, each with its own unique charm and beauty.",
-    facialExpression: 'smile',
-    animation: 'TalkingOne',
-    audio: '//uQx//uQxAAADG1DHeGEeipZLqI09Jn5AkRGhGiLv9pZ3QRTd3eIR7',
-    lipsync: { metadata: [Object], mouthCues: [Array] }
-  },
-  {
-    text: "There were times when the journey was tough, but the experiences and the people I met along the way made it all worth it.",
-    facialExpression: 'thoughtful',
-    animation: 'TalkingThree',
-    audio: '//uQx//uQxAAADG1DHeGEeipZLqI09Jn5AkRGhGiLv9pZ3QRTd3eIR7',
-    lipsync: { metadata: [Object], mouthCues: [Array] }
-  },  
+### Response Format
+
+```json
 {
-    text: :"And there's still so much more to see and explore. The world is a fascinating place!",
-    facialExpression: 'surprised',
-    animation: 'ThoughtfulHeadShake',
-    audio: '//uQx//uQxAAADG1DHeGEeipZLqI09Jn5AkRGhGiLv9pZ3QRTd3eIR7',
-    lipsync: { metadata: [Object], mouthCues: [Array] }
-  }
-]
+  "messages": [
+    {
+      "text": "spoken text",
+      "facialExpression": "smile",
+      "animation": "TalkingOne",
+      "audio": "<base64 MP3>",
+      "lipsync": {
+        "metadata": { "duration": 2.1 },
+        "mouthCues": [
+          { "start": 0.0, "end": 0.08, "value": "X" },
+          { "start": 0.08, "end": 0.16, "value": "B" }
+        ]
+      }
+    }
+  ]
+}
 ```
-
-The concept here is to craft a sequence of text accompanied by varied body movements (animations) and diverse facial expressions, aiming to imbue the digital human with a heightened sense of realism in its actions.
-
-## How it Operates
-The system operates through two primary workflows, depending on whether the user input is in text or audio form:
-
-### Workflow with Text Input:
-1. **User Input:** The user enters text.
-2. **Text Processing:** The text is forwarded to the OpenAI GPT API for processing.
-3. **Audio Generation:** The response from GPT is relayed to the Eleven Labs TTS API to generate audio.
-4. **Viseme Generation:** The audio is then sent to Rhubarb Lip Sync to produce viseme metadata.
-5. **Synchronization:** The visemes are utilized to synchronize the digital human's lips with the audio.
-
-### Workflow with Audio Input:
-1. **User Input:** The user submits audio.
-2. **Speech-to-Text Conversion:** The audio is transmitted to the OpenAI Whisper API to convert it into text.
-3. **Text Processing:** The converted text is sent to the OpenAI GPT API for further processing.
-4. **Audio Generation:** The output from GPT is sent to the Eleven Labs TTS API to produce audio.
-5. **Viseme Generation:** The audio is then routed to Rhubarb Lip Sync to generate viseme metadata.
-6. **Synchronization:** The visemes are employed to synchronize the digital human's lips with the audio.
-
-<div align="center">
-  <img src="resources/architecture.drawio.svg" alt="System Architecture" width="100%">
-</div>
 
 ## Getting Started
 
 ### Requirements
-Before using this system, ensure you have the following prerequisites:
 
-1. **OpenAI Subscription:** You must have an active subscription with OpenAI. If you don't have one, you can create it [here](https://openai.com/product).
-2. **Eleven Labs Subscription:** You need to have a subscription with Eleven Labs. If you don't have one yet, you can
-   sign up [here](https://elevenlabs.io/). 
-It's recommended to have the paid version. With the free version, the avatar doesn't work well due to an error caused by too many requests.
-3. **Rhubarb Lip-Sync:** Download the latest version of Rhubarb Lip-Sync compatible with your operating system from the
-   official [Rhubarb Lip-Sync repository](https://github.com/DanielSWolf/rhubarb-lip-sync/releases). Once downloaded,
-   create a `/bin` directory in the backend and move all the contents of the unzipped `rhubarb-lip-sync.zip` into it.
-   Sometimes, the operating system requests permissions, so you need to enable them.
-4. Install `ffmpeg` for  [Mac OS](https://formulae.brew.sh/formula/ffmpeg), [Linux](https://ffmpeg.org/download.html) or [Windows](https://ffmpeg.org/download.html).
+- **Node.js** >= 24.0.0 — `nvm use`
+- **Yarn** — Node.js package manager
+- **Python** >= 3.13 — for the lip-sync service
+- **uv** — Python package manager — `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **ffmpeg** — `brew install ffmpeg` (macOS) / `apt install ffmpeg` (Linux)
+- **OpenAI API key** — [openai.com](https://openai.com/product)
+- **Eleven Labs API key** — [elevenlabs.io](https://elevenlabs.io/)
 
 ### Installation
 
-1. Clone this repository:
-  
 ```bash
-git@github.com:asanchezyali/talking-avatar-with-ai.git
-```
+# Clone
+git clone git@github.com:asanchezyali/talking-avatar-with-ai.git
+cd talking-avatar-with-ai
 
-2. Navigate to the project directory:
-
-```bash
-cd digital-human
-```
-
-3. Install dependencies for monorepo:
-```bash
+# Install Node.js dependencies
 yarn
-```
-4. Create a .env file in the root `/apps/backend/` of the project and add the following environment variables:
 
-```bash
-# OPENAI
-OPENAI_MODEL=<YOUR_GPT_MODEL>
-OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
+# Install Python dependencies
+cd apps/lip-sync && uv sync && cd ../..
 
-# Elevenlabs
-ELEVEN_LABS_API_KEY=<YOUR_ELEVEN_LABS_API_KEY>
-ELVEN_LABS_VOICE_ID=<YOUR_ELEVEN_LABS_VOICE_ID>
-ELEVEN_LABS_MODEL_ID=<YOUR_ELEVEN_LABS_MODEL_ID>
+# Configure environment
+cp apps/backend/.env.example apps/backend/.env
+# Edit apps/backend/.env with your API keys
 ```
 
-5. Run the development system:
+### Environment Variables
+
+Create `apps/backend/.env`:
 
 ```bash
+# OpenAI
+OPENAI_MODEL=gpt-4
+OPENAI_API_KEY=<your-key>
+
+# Eleven Labs
+ELEVEN_LABS_API_KEY=<your-key>
+ELVEN_LABS_VOICE_ID=<your-voice-id>
+ELEVEN_LABS_MODEL_ID=<your-model-id>
+
+# Lip-Sync Service
+LIP_SYNC_SERVICE_URL=http://localhost:8000
+```
+
+### Running
+
+```bash
+# Start all services (frontend + backend + lip-sync)
 yarn dev
+
+# Start without Python lip-sync (uses text-based fallback)
+yarn dev:js-only
 ```
 
-6. If you need install another dependence in the monorepo, you can do this:
+Open [http://localhost:5173](http://localhost:5173) to see the avatar.
+
+### Docker
 
 ```bash
-yarn add --dev -W <PACKAGE_NAME>
-yarn
+docker compose up
 ```
 
+This starts the backend (port 3000) and lip-sync service (port 8000). The frontend runs separately via `yarn client`.
 
-Open [http://localhost:5173/](http://localhost:5173/) with your browser to see the result.
+## Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| **LLM** | OpenAI GPT via LangChain |
+| **Speech-to-Text** | OpenAI Whisper API |
+| **Text-to-Speech** | Eleven Labs |
+| **Lip-Sync** | Whisper (word timestamps) + g2p-en (phonemes) + viseme mapping |
+| **3D Avatar** | Ready Player Me + Three.js + React Three Fiber |
+| **Animations** | Mixamo |
+| **Backend** | Node.js, Express, LangChain |
+| **Lip-Sync API** | Python, FastAPI, uv |
+| **Frontend** | React, Vite, Tailwind CSS |
+
+## Project Structure
+
+```
+talking-avatar-with-ai/
+├── apps/
+│   ├── frontend/              # React + Three.js
+│   │   ├── src/components/    # Avatar, ChatInterface, Scenario
+│   │   ├── src/hooks/         # useSpeech context
+│   │   └── src/constants/     # viseme mappings, expressions
+│   ├── backend/               # Node.js + Express
+│   │   ├── modules/           # openAI, elevenLabs, lip-sync
+│   │   └── utils/             # file helpers
+│   └── lip-sync/              # Python + FastAPI
+│       ├── src/lip_sync/
+│       │   ├── api/           # FastAPI routes
+│       │   ├── application/   # Lip-sync orchestration
+│       │   ├── domain/        # Models, phoneme mapping
+│       │   └── infrastructure/# Whisper, g2p-en, audio utils
+│       └── tests/
+├── docker-compose.yml
+└── package.json               # Yarn workspaces root
+```
 
 ## References
-* How ChatGPT, Bard and other LLMs are signaling an evolution for AI digital humans: https://www.digitalhumans.com/blog/how-chatgpt-bard-and-other-llms-are-signaling-an-evolution-for-ai-digital-humans
-* UnneQ Digital Humans: https://www.digitalhumans.com/
-* LLMs: Building a Less Artificial and More Intelligent AI Human: https://www.linkedin.com/pulse/llms-building-less-artificial-more-intelligent-ai-human/
-* Building a digital person design best practices: https://fcatalyst.com/blog/aug2023/building-a-digital-person-design-best-practices
-* Navigating the Era of Digital Humans": An Initial Exploration of a Future Concept: https://www.linkedin.com/pulse/navigating-era-digital-humans-initial-exploration-future-koelmel-eqrje/ 
-* How to Setup Tailwind CSS in React JS with VS Code: https://dev.to/david_bilsonn/how-to-setup-tailwind-css-in-react-js-with-vs-code-59p4 
-* Ex-Human: https://exh.ai/#home
-* Allosaurus: https://github.com/xinjli/allosaurus 
-* Rhubarb Lip-Sync: https://github.com/DanielSWolf/rhubarb-lip-sync
-* Ready Player me - Oculus OVR LipSync: https://docs.readyplayer.me/ready-player-me/api-reference/avatars/morph-targets/oculus-ovr-libsync
-* Ready Player me - Apple Arkit: https://docs.readyplayer.me/ready-player-me/api-reference/avatars/morph-targets/apple-arkit 
-* Mixamo - https://www.mixamo.com/,
-* GLFT -> React Three Fiber - https://gltf.pmnd.rs/)
+
+- [Build a Digital Human with LLMs](https://monadical.com/posts/build-a-digital-human-with-large-language-models.html) — Original tutorial
+- [Ready Player Me — Oculus OVR LipSync](https://docs.readyplayer.me/ready-player-me/api-reference/avatars/morph-targets/oculus-ovr-libsync)
+- [Ready Player Me — Apple ARKit](https://docs.readyplayer.me/ready-player-me/api-reference/avatars/morph-targets/apple-arkit)
+- [OpenAI Whisper](https://github.com/openai/whisper)
+- [g2p-en](https://github.com/Kyubyong/g2p) — Grapheme-to-phoneme for English
+- [Mixamo](https://www.mixamo.com/) — 3D character animations
+- [GLTF → React Three Fiber](https://gltf.pmnd.rs/)
+
+## Community
+
+Join the [Math & Code Discord](https://discord.gg/gJ3vCgSWeh) for questions and discussion.
+
+## License
+
+MIT
