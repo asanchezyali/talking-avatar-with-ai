@@ -4,8 +4,18 @@ dotenv.config();
 
 const openAIApiKey = process.env.OPENAI_API_KEY;
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
+const sixtyDbApiKey = process.env.SIXTY_DB_API_KEY;
+const DEFAULT_PROVIDER = process.env.DEFAULT_TTS_PROVIDER || "elevenlabs";
 
-async function sendDefaultMessages({ userMessage }) {
+// Active provider's key is what matters; we only require the one the caller
+// is about to use, not both.
+const ttsKeyForProvider = (provider) => {
+  const p = provider || DEFAULT_PROVIDER;
+  if (p === "sixty_db" || p === "sixty_db_stream" || p === "sixty_db_ws") return sixtyDbApiKey;
+  return elevenLabsApiKey;
+};
+
+async function sendDefaultMessages({ userMessage, provider }) {
   let messages;
   if (!userMessage) {
     messages = [
@@ -26,7 +36,7 @@ async function sendDefaultMessages({ userMessage }) {
     ];
     return messages;
   }
-  if (!elevenLabsApiKey || !openAIApiKey) {
+  if (!ttsKeyForProvider(provider) || !openAIApiKey) {
     messages = [
       {
         text: "Please my friend, don't forget to add your API keys!",
