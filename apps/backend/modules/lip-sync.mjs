@@ -1,4 +1,4 @@
-import { convertTextToSpeech } from "./elevenLabs.mjs";
+import { convertTextToSpeech } from "./tts.mjs";
 import { getPhonemes } from "./rhubarbLipSync.mjs";
 import { readJsonTranscript, audioFileToBase64 } from "../utils/files.mjs";
 
@@ -7,14 +7,14 @@ const RETRY_DELAY = 0;
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const lipSync = async ({ messages }) => {
+const lipSync = async ({ messages, provider }) => {
   await Promise.all(
     messages.map(async (message, index) => {
       const fileName = `audios/message_${index}.mp3`;
 
       for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
         try {
-          await convertTextToSpeech({ text: message.text, fileName });
+          await convertTextToSpeech({ text: message.text, fileName, provider });
           await delay(RETRY_DELAY);
           break;
         } catch (error) {

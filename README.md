@@ -185,9 +185,32 @@ OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
 
 # Elevenlabs
 ELEVEN_LABS_API_KEY=<YOUR_ELEVEN_LABS_API_KEY>
-ELVEN_LABS_VOICE_ID=<YOUR_ELEVEN_LABS_VOICE_ID>
+ELEVEN_LABS_VOICE_ID=<YOUR_ELEVEN_LABS_VOICE_ID>
 ELEVEN_LABS_MODEL_ID=<YOUR_ELEVEN_LABS_MODEL_ID>
+
+# 60db (optional — only required if you call with provider=sixty_db)
+SIXTY_DB_API_KEY=<YOUR_60DB_API_KEY>
+SIXTY_DB_VOICE_ID=fbb75ed2-975a-40c7-9e06-38e30524a9a1
+SIXTY_DB_SPEED=1.0
+SIXTY_DB_STABILITY=50
+SIXTY_DB_SIMILARITY=75
+
+# Optional: provider used when the request body omits `provider`. Defaults to "elevenlabs".
+DEFAULT_TTS_PROVIDER=elevenlabs
 ```
+
+### Selecting the TTS provider per request
+
+`POST /tts` and `POST /sts` accept an optional `provider` field:
+
+```json
+{ "message": "Hello", "provider": "sixty_db" }
+```
+
+Allowed values: `elevenlabs` (default), `sixty_db` (60db REST one-shot),
+`sixty_db_stream` (60db NDJSON streaming), `sixty_db_ws` (60db WebSocket
++ ffmpeg PCM→mp3). All four write `audios/message_N.mp3` so the Rhubarb
+lip-sync pipeline is identical regardless of provider.
 
 5. Run the development system:
 
