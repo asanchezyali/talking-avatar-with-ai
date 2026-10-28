@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js --ext js"
+    "dev": "nodemon server.js --ext js",
+    "test": "node --test"
   },
   "dependencies": {
     "@langchain/openai": "^0.0.12",

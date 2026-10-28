@@ -7,14 +7,14 @@ dotenv.config();
 const openAIApiKey = process.env.OPENAI_API_KEY;
 
 async function convertAudioToText({ audioData }) {
-  const mp3AudioData = await convertAudioToMp3({ audioData });
-  const outputPath = "/tmp/output.mp3";
-  fs.writeFileSync(outputPath, mp3AudioData);
-  const loader = new OpenAIWhisperAudio(outputPath, { clientOptions: { apiKey: openAIApiKey } });
-  const doc = (await loader.load()).shift();
-  const transcribedText = doc.pageContent;
-  fs.unlinkSync(outputPath);
-  return transcribedText;
+  const { outputPath, tempDir } = await convertAudioToMp3({ audioData });
+  try {
+    const loader = new OpenAIWhisperAudio(outputPath, { clientOptions: { apiKey: openAIApiKey } });
+    const doc = (await loader.load()).shift();
+    return doc.pageContent;
+  } finally {
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
+  }
 }
 
 export { convertAudioToText };
